@@ -22,7 +22,7 @@ Quarto project to analyse Los Angeles crime reports.
 Analysis of victim age/sex/descent based on 2024 LA crime data (<https://catalog.data.gov/dataset?tags=crime>).
 
 ```{r fig.height=12, fig.width=14}
-#| label: plot-penguins
+#| label: plot-crimeLA
 #| warning: false
 #| echo: false
 
