@@ -12,6 +12,8 @@ library(tidyverse)
 library(palmerpenguins)
 library(dplyr)
 library(mapview)
+library(forcats)
+library(scales)
 
 data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
 
@@ -23,49 +25,32 @@ gg_color_hue <- function(n) {
 
 ## Quarto project
 
-Project title: Data analysis using R and Quarto
-Author: Student 296356
-Subject: Statistical analysis of Los Angeles crime reports
-Data source: Los Angeles crime types (based on 2024 data)
-(<https://catalog.data.gov/dataset?tags=crime>)
+Project title: Data analysis using R and Quarto Author: Student 296356 Subject: Statistical analysis of Los Angeles crime reports Data source: Los Angeles crime types (based on 2024 data) (<https://catalog.data.gov/dataset?tags=crime>)
 
 ## Most common crime types
 
-Analysis of Los Angeles crime types in 2024 by frequency
+The chart below shows an analysis of Los Angeles crime types in 2024 by frequency.
 
 ```{r fig.height=12, fig.width=14}
 #| label: plot-frequency
 #| warning: false
 #| echo: false
 
-#dim(data_orig)
-
 data_prep <- data_orig %>%
-  select(Crm.Cd.Desc,AREA.NAME) %>%
-  filter(Crm.Cd.Desc %in% head(names(sort(table(Crm.Cd.Desc), decreasing = TRUE)), 10))
+  select(Crm.Cd.Desc) %>%
+  filter(Crm.Cd.Desc %in% head(names(sort(table(Crm.Cd.Desc), decreasing = TRUE)), 20))
 
-dim(data_prep)
-
-tab <- table(data_prep$AREA.NAME, data_prep$Crm.Cd.Desc)
-
-#totals <- tab %>%                     #  counts of *all* rows per Product
-#  count(Crm.Cd.Desc, name = "total")
-
-#tab <- tab %>%                         # keep raw rows for geom_bar()
-#  left_join(totals, by = "Crm.Cd.Desc") %>%
-#  mutate(Crm.Cd.Desc = fct_reorder(Crm.Cd.Desc, total, .desc = TRUE))
-
-barplot(
-  tab,
-  col = gg_color_hue(20),
-#  col   = c("#1f77b4", "#2ca02c", "#d62728"),  # pick any palette you like
-  border = NA,            # clean look – optional
-  xlab  = "Crime type",       # adjust to match your x variable
-  ylab  = "Number of reported cases",
-  main  = "Most common crime types reported",
-  legend.text = rownames(tab),
-  args.legend = list(x = "topright", bty = "n", inset = 0.02)
-)
-
-
+ggplot(data_prep) +
+  geom_bar(fill = "steelblue", color = "grey20", aes(y = fct_rev(fct_infreq(Crm.Cd.Desc)))) +
+  scale_y_discrete(labels = label_wrap(30)) +
+  labs(x = "Number of crimes reported", y = "Crime type") +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 12)
+    )
+  )
 ```
+
+**Conclusion:** The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 200,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 100,000.
+
