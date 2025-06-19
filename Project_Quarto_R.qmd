@@ -5,8 +5,8 @@ date: last-modified
 number-sections: true
 toc: true
 format:
-#  html: default
-  pptx: default
+#  pptx: default
+  html: default
 #  pdf:
 #   margin-bottom: 3cm
 #   latex
@@ -82,6 +82,8 @@ ggplot(data_prep) +
   )
 ```
 
+***
+
 {{< pagebreak >}}
 
 # Geographical distribution of crime
@@ -108,6 +110,8 @@ cols = c("red", "blue")
 mapviewOptions(basemaps = c("OpenStreetMap","OpenTopoMap", "Esri.WorldImagery","OpenTopoMap", "CartoDB.Positron", "CartoDB.DarkMatter"))
 mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.Sex", crs = 4269, grid = FALSE, col.regions = cols, layer.name = 'Victim sex')
 ```
+
+***
 
 {{< pagebreak >}}
 
@@ -173,7 +177,7 @@ p <- ggplot(data, aes(x=as.factor(id), y=Freq, fill=Crm.Cd.Desc)) +
   geom_segment(data=grid_data, aes(x = end, y = 20, xend = start, yend = 20), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
   
   # Add text showing the value of each 100/75/50/25 lines
-  annotate("text", x = rep(max(data$id),4), y = c(20, 40, 60, 80), label = c("300", "600", "900", "1200") , color="grey", size=3 , angle=0, fontface="bold", hjust=1) +
+  annotate("text", x = rep(max(data$id),4), y = c(20, 40, 60, 80), label = c("300", "600", "900", "1200") , color="grey", size=5 , angle=0, fontface="bold", hjust=1) +
   
   geom_bar(aes(x=as.factor(id), y=Freq, fill=Crm.Cd.Desc), stat="identity", alpha=0.5) +
   ylim(-100,120) +
