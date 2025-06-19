@@ -6,8 +6,8 @@ number-sections: true
 toc: true
 format:
 #  html: default
-#  pptx: default
-  pdf: default
+  pptx: default
+#  pdf: default
 editor: source
 ---
 
@@ -174,9 +174,9 @@ p <- ggplot(data, aes(x=as.factor(id), y=Freq, fill=Crm.Cd.Desc)) +
     legend.position = "none",
     axis.text = element_blank(),
     axis.title = element_blank(),
-    panel.grid = element_blank()
-#    panel.grid = element_blank(),
-#    plot.margin = unit(rep(-1,4), "cm") 
+#    panel.grid = element_blank()
+    panel.grid = element_blank(),
+    plot.margin = unit(rep(-4,4), "cm") 
   ) +
   coord_polar() + 
   geom_text(data=label_data, aes(x=id, y=Freq+10, label=AREA.NAME, hjust=hjust), color="black", fontface="bold",alpha=0.6, size=3.5, angle= label_data$angle, inherit.aes = FALSE ) +
