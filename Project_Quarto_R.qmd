@@ -1,8 +1,12 @@
 ---
 title: "Data analysis using R and Quarto"
-format: pdf
+author: Student 296356
+date: last-modified
+format:
+  html: default
+  pptx: default
+  pdf: default
 editor: source
-prefer-html: true
 ---
 
 ```{r}
@@ -24,24 +28,33 @@ gg_color_hue <- function(n) {
   hcl(h = hues, l = 65, c = 100)[1:n]
 }
 ```
+---
 
-## Quarto project
+# Quarto project
 
-Project title: Data analysis using R and Quarto Author: Student 296356 Subject: Statistical analysis of Los Angeles crime reports Data source: Los Angeles crime types (based on 2024 data) (<https://catalog.data.gov/dataset?tags=crime>)
+Project title: Data analysis using R and Quarto
 
-::: {layout-ncol=2}
+Author: Student 296356
+
+Subject: Statistical analysis of Los Angeles crime reports
+
+Data source: Los Angeles crime types (based on 2024 data) (<https://catalog.data.gov/dataset?tags=crime>)
 
 ![Data source website](Source_website.png){fig-align="left" height="300"}
 
-![Data source table](Source_Excel.png){fig-align="right" height="300"}
+{{< pagebreak >}}
+```{r}
+knitr::asis_output("\n\n---\n\n")
+```
 
-:::
-
-## Most common crime types
+# Most common crime types
 
 The chart below shows an analysis of Los Angeles crime types in 2024 by frequency.
 
 Twenty most common offences are presented.
+
+## Conclusion:
+The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 200,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 100,000.
 
 ```{r fig.height=12, fig.width=14}
 #| label: plot-frequency
@@ -64,11 +77,18 @@ ggplot(data_prep) +
   )
 ```
 
-**Conclusion:** The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 200,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 100,000.
+{{< pagebreak >}}
+```{r}
+knitr::asis_output("\n\n---\n\n")
+```
 
-## Geographical distribution of crime
+# Geographical distribution of crime
 
 Certain offences usually exhibit a heterogeneous geographical distribution. To illustrate this, the map below displays the locations of reported cases of physical assault involving minors in 2024. Colors indicate victim sex.
+
+## Conclusion:
+The map clearly shows two clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
+No clear pattern is evident regarding the victims’ sex.
 
 ```{r fig.height=12, fig.width=14}
 #| label: plot-map
@@ -83,14 +103,19 @@ mapviewOptions(basemaps = c("OpenStreetMap","OpenTopoMap", "Esri.WorldImagery","
 mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.Sex", crs = 4269, grid = FALSE, col.regions = cols, layer.name = 'Victim sex')
 ```
 
-**Conclusion:** The map clearly shows two clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
-No clear pattern is evident regarding the victims’ sex.
+{{< pagebreak >}}
+```{r}
+knitr::asis_output("\n\n---\n\n")
+```
 
-## Crime distribution by area
+# Crime distribution by area
 
 The chart below shows crime distribution in the LA region by area.
 
 Five most common offences are presented.
+
+## Conclusion:
+For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show no area-related variation (e.g. “THEFT OF IDENTITY”).
 
 ```{r fig.height=14, fig.width=14}
 #| label: plot-area
@@ -169,5 +194,6 @@ p <- ggplot(data, aes(x=as.factor(id), y=Freq, fill=Crm.Cd.Desc)) +
 p
 ```
 
-**Conclusion:** For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show no area-related variation (e.g. “THEFT OF IDENTITY”).
+
+
 
