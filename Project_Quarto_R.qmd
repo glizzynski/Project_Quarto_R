@@ -5,8 +5,8 @@ date: last-modified
 number-sections: true
 toc: true
 format:
-  html: default
-  pptx: default
+#  html: default
+#  pptx: default
   pdf: default
 editor: source
 ---
@@ -24,13 +24,11 @@ library(scales)
 library(webshot)
 
 data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
-
-gg_color_hue <- function(n) {
-  hues = seq(15, 375, length = n + 1)
-  hcl(h = hues, l = 65, c = 100)[1:n]
-}
 ```
+
 ---
+
+{{< pagebreak >}}
 
 # Quarto project
 
@@ -42,12 +40,11 @@ Subject: Statistical analysis of Los Angeles crime reports
 
 Data source: Los Angeles crime types (based on 2024 data) (<https://catalog.data.gov/dataset?tags=crime>)
 
-![Data source website](Source_website.png){fig-align="left" height="300"}
+![](Source_website.png)
+
+---
 
 {{< pagebreak >}}
-```{r}
-knitr::asis_output("\n\n---\n\n")
-```
 
 # Most common crime types
 
@@ -80,9 +77,6 @@ ggplot(data_prep) +
 ```
 
 {{< pagebreak >}}
-```{r}
-knitr::asis_output("\n\n---\n\n")
-```
 
 # Geographical distribution of crime
 
@@ -92,7 +86,7 @@ Certain offences usually exhibit a heterogeneous geographical distribution. To i
 The map clearly shows two clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
 No clear pattern is evident regarding the victims’ sex.
 
-```{r fig.height=12, fig.width=14}
+```{r}
 #| label: plot-map
 #| warning: false
 #| echo: false
@@ -106,9 +100,6 @@ mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.
 ```
 
 {{< pagebreak >}}
-```{r}
-knitr::asis_output("\n\n---\n\n")
-```
 
 # Crime distribution by area
 
@@ -183,8 +174,9 @@ p <- ggplot(data, aes(x=as.factor(id), y=Freq, fill=Crm.Cd.Desc)) +
     legend.position = "none",
     axis.text = element_blank(),
     axis.title = element_blank(),
-    panel.grid = element_blank(),
-    plot.margin = unit(rep(-1,4), "cm") 
+    panel.grid = element_blank()
+#    panel.grid = element_blank(),
+#    plot.margin = unit(rep(-1,4), "cm") 
   ) +
   coord_polar() + 
   geom_text(data=label_data, aes(x=id, y=Freq+10, label=AREA.NAME, hjust=hjust), color="black", fontface="bold",alpha=0.6, size=3.5, angle= label_data$angle, inherit.aes = FALSE ) +
