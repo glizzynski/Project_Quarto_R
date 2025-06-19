@@ -1,5 +1,5 @@
 ---
-title: "Quarto project – Amelia Kaczmarczyk"
+title: "Data analysis using R and Quarto"
 format: html
 editor: visual
 ---
@@ -11,11 +11,15 @@ editor: visual
 library(tidyverse)
 library(palmerpenguins)
 library(dplyr)
+library(mapview)
 ```
 
 ## Quarto project
 
-Quarto project to analyse Los Angeles crime reports.
+Project title: Data analysis using R and Quarto
+Author: Student 296356
+Subject: Statistical analysis of Los Angeles crime reports
+
 
 ## Los Angeles crime types based on 2024 data
 
@@ -27,12 +31,68 @@ Analysis of victim age/sex/descent based on 2024 LA crime data (<https://catalog
 #| echo: false
 
 data <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
+data_full <- read.csv("Crime_data_LA_Original.csv", header = TRUE, sep = ";")
 
 data_MF_only <- data[ which(data$VICTIM_SEX=='F' | data$VICTIM_SEX=='M'), ]
 
 data_MF_only_sorted <- data_MF_only %>% add_count(CRIME, sort = TRUE)
 
 data_MF_only_sorted_top10 <- data_MF_only_sorted[ which(data_MF_only_sorted$n>400),]
+
+data_for_map1 <- filter(data_full, Crm.Cd.Desc == "VEHICLE_STOLEN" & Vict.Age > 0 & Vict.Age < 18 & (Vict.Sex == "M" | Vict.Sex == "F"))
+
+#data_for_map1 <- filter(data_full, Crm.Cd.Desc == "ROBBERY" & (Vict.Sex == "M" | Vict.Sex == "F"))
+data_for_map_BatteryBelow18_1 <- filter(data_full, Crm.Cd.Desc == "BATTERY - SIMPLE ASSAULT" & Vict.Age > 0 & Vict.Age < 18 & (Vict.Sex == "M" | Vict.Sex == "F"))
+data_for_map_BatteryBelow18_2 <- select(data_for_map_BatteryBelow18_1, Vict.Sex, LON, LAT)
+
+
+cols = c("red", "blue")
+mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.Sex", crs = 4269, grid = FALSE, col.regions = cols, layer.name = 'Victim sex')
+
+#options(repr.plot.width = 26, repr.plot.height = 34)
+
+ggplot(data_MF_only_sorted_top10, 
+       aes(x = VICTIM_AGE, y = CRIME)) +
+  geom_point(aes(color = VICTIM_SEX, shape = VICTIM_SEX)) +
+  scale_color_manual(values = c("darkorange","purple","cyan4","blue","red")) +
+  labs(
+    title = "Most common crimes by age and sex",
+    subtitle = "Victim age and sex",
+    x = "Age (years)", y = "Crime type",
+    color = "Sex", shape = "Sex"
+  ) +
+#  theme_minimal()
+  theme_minimal(base_size=16)
+```
+
+
+## Los Angeles crime types based on 2024 data
+
+Analysis of victim age/sex/descent based on 2024 LA crime data (<https://catalog.data.gov/dataset?tags=crime>).
+
+```{r fig.height=12, fig.width=14}
+#| label: plot-crimeLA
+#| warning: false
+#| echo: false
+
+data <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
+data_full <- read.csv("Crime_data_LA_Original.csv", header = TRUE, sep = ";")
+
+data_MF_only <- data[ which(data$VICTIM_SEX=='F' | data$VICTIM_SEX=='M'), ]
+
+data_MF_only_sorted <- data_MF_only %>% add_count(CRIME, sort = TRUE)
+
+data_MF_only_sorted_top10 <- data_MF_only_sorted[ which(data_MF_only_sorted$n>400),]
+
+data_for_map1 <- filter(data_full, Crm.Cd.Desc == "VEHICLE_STOLEN" & Vict.Age > 0 & Vict.Age < 18 & (Vict.Sex == "M" | Vict.Sex == "F"))
+
+#data_for_map1 <- filter(data_full, Crm.Cd.Desc == "ROBBERY" & (Vict.Sex == "M" | Vict.Sex == "F"))
+data_for_map_BatteryBelow18_1 <- filter(data_full, Crm.Cd.Desc == "BATTERY - SIMPLE ASSAULT" & Vict.Age > 0 & Vict.Age < 18 & (Vict.Sex == "M" | Vict.Sex == "F"))
+data_for_map_BatteryBelow18_2 <- select(data_for_map_BatteryBelow18_1, Vict.Sex, LON, LAT)
+
+
+cols = c("red", "blue")
+mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.Sex", crs = 4269, grid = FALSE, col.regions = cols, layer.name = 'Victim sex')
 
 #options(repr.plot.width = 26, repr.plot.height = 34)
 
