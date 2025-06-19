@@ -27,6 +27,14 @@ gg_color_hue <- function(n) {
 
 Project title: Data analysis using R and Quarto Author: Student 296356 Subject: Statistical analysis of Los Angeles crime reports Data source: Los Angeles crime types (based on 2024 data) (<https://catalog.data.gov/dataset?tags=crime>)
 
+::: {layout-ncol=2}
+
+![Data source website](Source_website.png){fig-align="left" height="300"}
+
+![Data source table](Source_Excel.png){fig-align="right" height="300"}
+
+:::
+
 ## Most common crime types
 
 The chart below shows an analysis of Los Angeles crime types in 2024 by frequency.
@@ -57,7 +65,6 @@ ggplot(data_prep) +
 ## Geographical distribution of crime
 
 Certain offences usually exhibit a heterogeneous geographical distribution. To illustrate this, the map below displays the locations of reported cases of physical assault involving minors in 2024. Colors indicate victim sex.
-
 
 ```{r fig.height=12, fig.width=14}
 #| label: plot-map
