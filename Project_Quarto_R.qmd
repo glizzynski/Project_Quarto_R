@@ -54,3 +54,25 @@ ggplot(data_prep) +
 
 **Conclusion:** The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 200,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 100,000.
 
+## Geographical distribution of crime
+
+Certain offences usually exhibit a heterogeneous geographical distribution. To illustrate this, the map below displays the locations of reported cases of physical assault involving minors in 2024. Colors indicate victim sex.
+
+
+```{r fig.height=12, fig.width=14}
+#| label: plot-map
+#| warning: false
+#| echo: false
+
+data_for_map_BatteryBelow18_1 <- filter(data_orig, Crm.Cd.Desc == "BATTERY - SIMPLE ASSAULT" & Vict.Age > 0 & Vict.Age < 18 & (Vict.Sex == "M" | Vict.Sex == "F"))
+data_for_map_BatteryBelow18_2 <- select(data_for_map_BatteryBelow18_1, Vict.Sex, LON, LAT)
+
+cols = c("red", "blue")
+mapviewOptions(basemaps = c("OpenStreetMap","OpenTopoMap", "Esri.WorldImagery","OpenTopoMap", "CartoDB.Positron", "CartoDB.DarkMatter"))
+mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.Sex", crs = 4269, grid = FALSE, col.regions = cols, layer.name = 'Victim sex')
+```
+
+**Conclusion:** The map clearly shows two clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
+No clear pattern is evident regarding the victims’ sex.
+
+
