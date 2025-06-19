@@ -2,6 +2,8 @@
 title: "Data analysis using R and Quarto"
 author: Student 296356
 date: last-modified
+number-sections: true
+toc: true
 format:
   html: default
   pptx: default
