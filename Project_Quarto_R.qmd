@@ -7,8 +7,12 @@ toc: true
 format:
 #  html: default
   pptx: default
-#  pdf: default
+#  pdf:
+#   margin-bottom: 3cm
+#   latex
 editor: source
+execute:
+  fig-format: png
 ---
 
 ```{r}
@@ -21,7 +25,7 @@ library(dplyr)
 library(mapview)
 library(forcats)
 library(scales)
-library(webshot)
+library(webshot2)
 
 data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
 ```
@@ -52,8 +56,10 @@ The chart below shows an analysis of Los Angeles crime types in 2024 by frequenc
 
 Twenty most common offences are presented.
 
-## Conclusion:
+## Conclusion:{.unnumbered .unlisted}
 The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 200,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 100,000.
+
+\
 
 ```{r fig.height=12, fig.width=14}
 #| label: plot-frequency
@@ -82,9 +88,12 @@ ggplot(data_prep) +
 
 Certain offences usually exhibit a heterogeneous geographical distribution. To illustrate this, the map below displays the locations of reported cases of physical assault involving minors in 2024. Colors indicate victim sex.
 
-## Conclusion:
+## Conclusion:{.unnumbered .unlisted}
 The map clearly shows two clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
+
 No clear pattern is evident regarding the victims’ sex.
+
+\
 
 ```{r}
 #| label: plot-map
@@ -92,6 +101,7 @@ No clear pattern is evident regarding the victims’ sex.
 #| echo: false
 
 data_for_map_BatteryBelow18_1 <- filter(data_orig, Crm.Cd.Desc == "BATTERY - SIMPLE ASSAULT" & Vict.Age > 0 & Vict.Age < 18 & (Vict.Sex == "M" | Vict.Sex == "F"))
+#data_for_map_BatteryBelow18_1 <- filter(data_orig, Crm.Cd.Desc == "BATTERY - SIMPLE ASSAULT" & Vict.Age > 0 & Vict.Age < 18)
 data_for_map_BatteryBelow18_2 <- select(data_for_map_BatteryBelow18_1, Vict.Sex, LON, LAT)
 
 cols = c("red", "blue")
@@ -103,11 +113,9 @@ mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.
 
 # Crime distribution by area
 
-The chart below shows crime distribution in the LA region by area.
+The chart below shows crime distribution in the LA region by area. Five most common offences are presented.
 
-Five most common offences are presented.
-
-## Conclusion:
+## Conclusion:{.unnumbered .unlisted}
 For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show no area-related variation (e.g. “THEFT OF IDENTITY”).
 
 ```{r fig.height=14, fig.width=14}
@@ -183,7 +191,7 @@ p <- ggplot(data, aes(x=as.factor(id), y=Freq, fill=Crm.Cd.Desc)) +
   
   # Add base line information
   geom_segment(data=base_data, aes(x = start, y = -5, xend = end, yend = -5), colour = "black", alpha=0.8, size=0.6 , inherit.aes = FALSE )  +
-  geom_text(data=base_data, aes(x = title, y = -18, label=gsub('(.{1,12})(\\s|$)', '\\1\n', Crm.Cd.Desc)), hjust=c(1,1,0,0,0), colour = "black", alpha=0.8, size=4, fontface="bold", inherit.aes = FALSE)
+  geom_text(data=base_data, aes(x = title, y = -25, label=gsub('(.{1,10})(\\s|$)', '\\1\n', Crm.Cd.Desc)), hjust=c(1,1,0,0,0), colour = "black", alpha=0.8, size=6, fontface="bold", inherit.aes = FALSE)
  
 p
 ```
