@@ -95,24 +95,30 @@ ggplot(data_prep) +
 This section presents the results of victim age analysis. Only male and female genders are presented (other/unknown categories are omitted due to low sample size).
 
 ::: {.grid}
-
 ::: {.g-col-6}
-
 **Histogram plot – total population:**
 ```{r}
+#| label: age-histogram1
+#| warning: false
+#| echo: false
+
 data_prep <- data_orig %>% 
   select(Vict.Age, Vict.Sex) %>%
   filter(Vict.Age > 0)
 
-hist(data_prep$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(1,0,0,0.5), xlab="Victim age",
+hist(data_prep$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(0.3,0.8,0.3,0.5), xlab="Victim age",
      ylab="No. of crimes", main="Victim age distribution" )
 ```
 
 **Conclusion:** Most victims are adults aged 20–40 years. The data seems to be distributed normally.
-
+:::
+::: {.g-col-6}
 **Histogram plot – victim age distribution by sex:**
-
 ```{r}
+#| label: age-histogram2
+#| warning: false
+#| echo: false
+
 data_prep <- data_orig %>% 
   select(Vict.Age, Vict.Sex) %>%
   filter(Vict.Age > 0)
@@ -130,18 +136,39 @@ legend("topright", legend=c("Men","Women"), col=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5)
 
 **Conclusion:** This chart presents overimposed histograms of the age for male and female victims. The sex-specific charts are very similar, although male victims are slightly older.
 :::
-  
-::: {.g-col-6}
+:::  
 
-**Descriptive stastistics:**
+**Summary stastistics:**
 
 ```{r}
-summary(data_prep)
+#| label: summary-stats
+#| warning: false
+#| echo: false
+
+library(vtable)
+st(data.frame(data_prep$Vict.Age),
+  labels = c('Victim age'),
+  title = "",
+  col.align = 'center',
+  add.median = TRUE,
+  summ = c('notNA(x)', 'mean(x)',   'median(x)',   'sd(x)', 'min(x)', 'pctile(x)[25]', 'pctile(x)[75]', 'max(x)')
+)
 ```
 
-:::
-  
-:::  
+\
+
+**Shapiro-Wilk test for normal distribution:**
+
+```{r}
+#| label: Shapiro-Wilk
+#| warning: false
+#| echo: false
+
+shapiro.test(head(data_prep$Vict.Age, n=5000))
+```
+
+**Conclusion:** The *p* value in Shapiro-Wilk test is very low, confirming normal distribution of the data.
+
 
 ------------------------------------------------------------------------
 
@@ -273,6 +300,8 @@ The chart below shows a heatmap of the likelyhood of specific crimes depending o
 ## Conclusion: {.unnumbered .unlisted}
 
 Vehicle-related crimes (stealing or burglary from vehicle) are committed significantly more often during evening hours, starting around 5:00 PM. Most cases of theft occur in the middle of the day, whereas trespassing is clearly limited to early morning hours. Offences such as burglary are equally distributed throughout the day.
+
+\
 
 ```{r}
 #| label: plot-heatmap
