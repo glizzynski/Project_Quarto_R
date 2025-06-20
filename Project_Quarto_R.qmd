@@ -8,8 +8,7 @@ format:
 #  pptx: default
   html: default
 #  pdf:
-#   margin-bottom: 3cm
-#   latex
+#    margin-bottom: 3cm
 editor: source
 execute:
   fig-format: png
@@ -26,11 +25,16 @@ library(mapview)
 library(forcats)
 library(scales)
 library(webshot2)
+library(hrbrthemes)
+library(viridis)
+library(plotly)
+library(heatmaply)
+library(stringr)
 
 data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
 ```
 
----
+------------------------------------------------------------------------
 
 {{< pagebreak >}}
 
@@ -46,7 +50,7 @@ Data source: Los Angeles crime types (based on 2024 data) (<https://catalog.data
 
 ![](Source_website.png)
 
----
+------------------------------------------------------------------------
 
 {{< pagebreak >}}
 
@@ -56,8 +60,9 @@ The chart below shows an analysis of Los Angeles crime types in 2024 by frequenc
 
 Twenty most common offences are presented.
 
-## Conclusion:{.unnumbered .unlisted}
-The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 200,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 100,000.
+## Conclusion: {.unnumbered .unlisted}
+
+The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 20,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 10,000.
 
 \
 
@@ -81,8 +86,64 @@ ggplot(data_prep) +
     )
   )
 ```
+------------------------------------------------------------------------
 
-***
+{{< pagebreak >}}
+
+# Victim age analysis
+
+This section presents the results of victim age analysis. Only male and female genders are presented (other/unknown categories are omitted due to low sample size).
+
+::: {.grid}
+
+::: {.g-col-6}
+
+**Histogram plot – total population:**
+```{r}
+data_prep <- data_orig %>% 
+  select(Vict.Age, Vict.Sex) %>%
+  filter(Vict.Age > 0)
+
+hist(data_prep$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(1,0,0,0.5), xlab="Victim age",
+     ylab="No. of crimes", main="Victim age distribution" )
+```
+
+**Conclusion:** Most victims are adults aged 20–40 years. The data seems to be distributed normally.
+
+**Histogram plot – victim age distribution by sex:**
+
+```{r}
+data_prep <- data_orig %>% 
+  select(Vict.Age, Vict.Sex) %>%
+  filter(Vict.Age > 0)
+
+data_prep_M <- filter(data_prep, Vict.Sex == "M")
+data_prep_F <- filter(data_prep, Vict.Sex == "F")
+ 
+hist(data_prep_M$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(1,0,0,0.5), xlab="Victim age",
+     ylab="No. of crimes", main="Victim age distribution by sex" )
+
+hist(data_prep_F$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(0,0,1,0.5), add=T)
+
+legend("topright", legend=c("Men","Women"), col=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5)), pt.cex=2, pch=15 )
+```
+
+**Conclusion:** This chart presents overimposed histograms of the age for male and female victims. The sex-specific charts are very similar, although male victims are slightly older.
+:::
+  
+::: {.g-col-6}
+
+**Descriptive stastistics:**
+
+```{r}
+summary(data_prep)
+```
+
+:::
+  
+:::  
+
+------------------------------------------------------------------------
 
 {{< pagebreak >}}
 
@@ -90,8 +151,9 @@ ggplot(data_prep) +
 
 Certain offences usually exhibit a heterogeneous geographical distribution. To illustrate this, the map below displays the locations of reported cases of physical assault involving minors in 2024. Colors indicate victim sex.
 
-## Conclusion:{.unnumbered .unlisted}
-The map clearly shows two clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
+## Conclusion: {.unnumbered .unlisted}
+
+The map clearly shows two large and two smaller clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
 
 No clear pattern is evident regarding the victims’ sex.
 
@@ -111,7 +173,7 @@ mapviewOptions(basemaps = c("OpenStreetMap","OpenTopoMap", "Esri.WorldImagery","
 mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.Sex", crs = 4269, grid = FALSE, col.regions = cols, layer.name = 'Victim sex')
 ```
 
-***
+------------------------------------------------------------------------
 
 {{< pagebreak >}}
 
@@ -119,8 +181,9 @@ mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.
 
 The chart below shows crime distribution in the LA region by area. Five most common offences are presented.
 
-## Conclusion:{.unnumbered .unlisted}
-For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show no area-related variation (e.g. “THEFT OF IDENTITY”).
+## Conclusion: {.unnumbered .unlisted}
+
+For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show clearly more homogeneous distribution (e.g. “VANDALISM”).
 
 ```{r fig.height=14, fig.width=14}
 #| label: plot-area
@@ -195,11 +258,41 @@ p <- ggplot(data, aes(x=as.factor(id), y=Freq, fill=Crm.Cd.Desc)) +
   
   # Add base line information
   geom_segment(data=base_data, aes(x = start, y = -5, xend = end, yend = -5), colour = "black", alpha=0.8, size=0.6 , inherit.aes = FALSE )  +
-  geom_text(data=base_data, aes(x = title, y = -25, label=gsub('(.{1,10})(\\s|$)', '\\1\n', Crm.Cd.Desc)), hjust=c(1,1,0,0,0), colour = "black", alpha=0.8, size=6, fontface="bold", inherit.aes = FALSE)
+  geom_text(data=base_data, aes(x = title, y = -25, label=gsub('(.{1,11})(\\s|$)', '\\1\n', Crm.Cd.Desc)), hjust=c(1,1,0,0,0), colour = "black", alpha=0.8, size=5, fontface="bold", inherit.aes = FALSE)
  
 p
 ```
+------------------------------------------------------------------------
 
+{{< pagebreak >}}
 
+# Crime types by time of day
 
+The chart below shows a heatmap of the likelyhood of specific crimes depending on time of day. Fifteen most common offences are presented.
 
+## Conclusion: {.unnumbered .unlisted}
+
+Vehicle-related crimes (stealing or burglary from vehicle) are committed significantly more often during evening hours, starting around 5:00 PM. Most cases of theft occur in the middle of the day, whereas trespassing is clearly limited to early morning hours. Offences such as burglary are equally distributed throughout the day.
+
+```{r}
+#| label: plot-heatmap
+#| warning: false
+#| echo: false
+
+data_prep <- data_orig %>%
+  select(Crm.Cd.Desc, Hour) %>%
+  filter(Crm.Cd.Desc %in% head(names(sort(table(Crm.Cd.Desc), decreasing = TRUE)), 15))
+data_prep$Crm.Cd.Desc = str_wrap(data_prep$Crm.Cd.Desc, width = 30)
+data_for_heatmap <- as.data.frame.matrix(table(data_prep$Crm.Cd.Desc, data_prep$Hour))
+
+heatmaply(data_for_heatmap,
+  dendrogram = "none",
+  scale_fill_gradient_fun = ggplot2::scale_fill_gradientn(colours = viridis(256, option = "turbo")),
+  xlab = "Time of day", ylab = "Crime type",
+  main = "Crime types by time of day – a heatmap chart",
+  grid_color = "white",
+  label_names = c("Crime type", "Time of day", "Number reported"),
+  fontsize_row = 8, fontsize_col = 8,
+  heatmap_layers = theme(axis.line = element_blank())
+) 
+```
