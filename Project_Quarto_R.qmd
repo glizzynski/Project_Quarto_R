@@ -30,6 +30,8 @@ library(viridis)
 library(plotly)
 library(heatmaply)
 library(stringr)
+library(RColorBrewer)
+
 
 data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
 ```
@@ -75,8 +77,17 @@ data_prep <- data_orig %>%
   select(Crm.Cd.Desc) %>%
   filter(Crm.Cd.Desc %in% head(names(sort(table(Crm.Cd.Desc), decreasing = TRUE)), 20))
 
+#display.brewer.all()
+mypalette<-brewer.pal(8,"Dark2")
+mypalette
+
 ggplot(data_prep) +
-  geom_bar(fill = "steelblue", color = "grey20", aes(y = fct_rev(fct_infreq(Crm.Cd.Desc)))) +
+  geom_bar(
+    fill = c("#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231",
+  "#911eb4", "#46f0f0", "#f032e6", "#bcf60c", "#fabebe",
+  "#008080", "#e6beff", "#9a6324", "#fffac8", "#800000",
+  "#aaffc3", "#808000", "#ffd8b1", "#000075", "#808080"),
+    color = "grey20", aes(y = fct_rev(fct_infreq(Crm.Cd.Desc)))) +
   scale_y_discrete(labels = label_wrap(30)) +
   labs(x = "Number of crimes reported", y = "Crime type") +
   theme(
