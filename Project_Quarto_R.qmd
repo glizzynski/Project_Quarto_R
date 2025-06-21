@@ -5,8 +5,8 @@ date: last-modified
 number-sections: true
 toc: true
 format:
-#  pptx: default
-  html: default
+  pptx: default
+#  html: default
 #  pdf:
 #    margin-bottom: 3cm
 editor: source
@@ -19,20 +19,18 @@ execute:
 #| include: false
 
 library(tidyverse)
-library(palmerpenguins)
 library(dplyr)
 library(mapview)
 library(forcats)
 library(scales)
 library(webshot2)
-library(hrbrthemes)
+#library(hrbrthemes)
 library(viridis)
 library(plotly)
 library(heatmaply)
 library(stringr)
 library(packcircles)
 library(ggplot2)
-
 
 data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
 ```
@@ -43,13 +41,15 @@ data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
 
 # Quarto project
 
-Project title: Data analysis using R and Quarto
+**Project title:** Data analysis using R and Quarto
 
-Author: Student 296356
+**Author:** Student 296356
 
-Subject: Statistical analysis of Los Angeles crime reports
+**Subject:** Statistical analysis of Los Angeles crime reports
 
-Data source: Los Angeles crime types (based on 2024 data) (<https://catalog.data.gov/dataset?tags=crime>)
+**Data source:** Los Angeles crime types (based on 2024 data) (<https://catalog.data.gov/dataset?tags=crime>)
+
+\
 
 ![](Source_website.png)
 
@@ -152,11 +152,11 @@ data_prep <- data_orig %>%
   select(Vict.Age, Vict.Sex) %>%
   filter(Vict.Age > 0)
 
-hist(data_prep$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(0.3,0.8,0.3,0.5), xlab="Victim age",
+hist(data_prep$Vict.Age, breaks=30, xlim=c(0,100), col="orange", xlab="Victim age",
      ylab="No. of crimes", main="Victim age distribution" )
 ```
 
-**Conclusion:** Most victims are adults aged 20–40 years. The data seems to be distributed normally.
+**Conclusion:** This chart present *the entire population*. Most victims are adults aged 20–40 years. The data seems to be distributed normally, as confirmed below in a statistical test.
 :::
 ::: {.g-col-6}
 **Histogram plot – victim age distribution by sex:**
@@ -180,7 +180,7 @@ hist(data_prep_F$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(0,0,1,0.5), add=T)
 legend("topright", legend=c("Men","Women"), col=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5)), pt.cex=2, pch=15 )
 ```
 
-**Conclusion:** This chart presents overimposed histograms of the age for male and female victims. The sex-specific charts are very similar, although male victims are slightly older.
+**Conclusion:** This chart presents overimposed histograms of the age for *male* and *female* victims. The sex-specific histograms are very similar and nearly overlap, although *male* victims are slightly older.
 :::
 :::  
 
@@ -201,9 +201,11 @@ st(data.frame(data_prep$Vict.Age),
 )
 ```
 
+**Conclusion:** The yougest victim was 2 years old, and the oldest 99 years old. Median victim age was 36 years.
+
 \
 
-**Shapiro-Wilk test for normal distribution:**
+**Test for normal distribution:**
 
 ```{r}
 #| label: Shapiro-Wilk
@@ -256,7 +258,7 @@ The chart below shows crime distribution in the LA region by area. Five most com
 
 ## Conclusion: {.unnumbered .unlisted}
 
-For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show clearly more homogeneous distribution (e.g. “VANDALISM”).
+For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show more homogeneous distribution (e.g. “VANDALISM”).
 
 ```{r fig.height=14, fig.width=14}
 #| label: plot-area
