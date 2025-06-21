@@ -2,13 +2,17 @@
 title: "Data analysis using R and Quarto"
 author: Student 296356
 date: last-modified
+date-format: long
 number-sections: true
 toc: true
 format:
-  pptx: default
-#  html: default
-#  pdf:
-#    margin-bottom: 3cm
+  pptx:
+    reference-doc: template.pptx
+    slide-level: 0
+  html:
+    default
+  pdf:
+    margin-bottom: 3cm
 editor: source
 execute:
   fig-format: png
@@ -39,7 +43,7 @@ data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
 
 {{< pagebreak >}}
 
-# Quarto project
+# Information on the Quarto project
 
 **Project title:** Data analysis using R and Quarto
 
@@ -59,15 +63,16 @@ data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
 
 # Most common crime types
 
-The chart below shows an analysis of Los Angeles crime types in 2024 by frequency.
+This chart shows an analysis of Los Angeles crime types in 2024 by frequency.
 
 Twenty most common offences are presented.
 
-## Conclusion: {.unnumbered .unlisted}
+:::{.content-visible when-format="pptx"}
+\
+**Conclusion:**
 
 The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 20,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 10,000.
-
-\
+:::
 
 ```{r fig.height=12, fig.width=14}
 #| label: plot-frequency
@@ -94,6 +99,161 @@ ggplot(data_prep) +
     )
   )
 ```
+:::{.content-visible unless-format="pptx"}
+**Conclusion:**
+
+The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 20,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 10,000.
+:::
+------------------------------------------------------------------------
+
+{{< pagebreak >}}
+
+# Victim age analysis
+
+## Victim age structure: entire sample {.unnumbered .unlisted}
+
+:::{.content-visible when-format="pptx"}
+\
+**Conclusion:**
+This chart presents age distribution in *the entire population*. Most victims are adults aged 20–40 years. The data seems to be distributed normally, as confirmed below in a statistical test.
+:::
+
+```{r}
+#| label: age-histogram1_new
+#| warning: false
+#| echo: false
+
+data_prep <- data_orig %>% 
+  select(Vict.Age, Vict.Sex) %>%
+  filter(Vict.Age > 0)
+
+hist(data_prep$Vict.Age, breaks=30, xlim=c(0,100), col="orange", xlab="Victim age",
+     ylab="No. of crimes", main="Victim age distribution - total population" )
+```
+
+:::{.content-visible unless-format="pptx"}
+\
+**Conclusion:**
+This chart presents age distribution in *the entire population*. Most victims are adults aged 20–40 years. The data seems to be distributed normally, as confirmed below in a statistical test.
+:::
+
+{{< pagebreak >}}
+
+# {.unnumbered .unlisted}
+
+## Victim age structure: by age {.unnumbered .unlisted}
+
+:::{.content-visible when-format="pptx"}
+\
+**Conclusion:** This chart presents overimposed histograms of the age for *male* and *female* victims. The sex-specific histograms are very similar and nearly overlap, although *male* victims are slightly older.
+\
+\
+Only *male* and *female* genders are included (categories *other*/*unknown* were omitted due to low sample size).
+:::
+
+```{r}
+#| label: age-histogram2
+#| warning: false
+#| echo: false
+
+data_prep <- data_orig %>% 
+  select(Vict.Age, Vict.Sex) %>%
+  filter(Vict.Age > 0)
+
+data_prep_M <- filter(data_prep, Vict.Sex == "M")
+data_prep_F <- filter(data_prep, Vict.Sex == "F")
+ 
+hist(data_prep_M$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(1,0,0,0.5), xlab="Victim age",
+     ylab="No. of crimes", main="Victim age distribution by sex" )
+
+hist(data_prep_F$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(0,0,1,0.5), add=T)
+
+legend("topright", legend=c("Men","Women"), col=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5)), pt.cex=2, pch=15 )
+```
+
+:::{.content-visible unless-format="pptx"}
+\
+**Conclusion:** This chart presents overimposed histograms of the age for *male* and *female* victims. The sex-specific histograms are very similar and nearly overlap, although *male* victims are slightly older.
+\
+\
+Only *male* and *female* genders are included (categories *other*/*unknown* were omitted due to low sample size).
+:::
+
+{{< pagebreak >}}
+
+## Summary stastistics {.unnumbered .unlisted}
+
+```{r fig.height=14, fig.width=14}
+#| label: summary-stats
+#| warning: false
+#| echo: false
+
+library(vtable)
+cat('N:', round(notNA(data_prep$Vict.Age)))
+cat('Min:', round(min(data_prep$Vict.Age)))
+cat('25th perc.:', round(quantile(data_prep$Vict.Age, 0.25)))
+cat('Mean:', round(mean(data_prep$Vict.Age)))
+cat('Median:', round(median(data_prep$Vict.Age)))
+cat('SD:', round(sd(data_prep$Vict.Age)))
+cat('75th perc.:', round(quantile(data_prep$Vict.Age, 0.75)))
+cat('Max:', round(max(data_prep$Vict.Age)))
+```
+**Conclusion:** The youngest victim was 2 years old, and the oldest 99 years old. Median victim age was 36 years.
+
+### Test for normal distribution: {.unnumbered .unlisted}
+
+```{r}
+#| label: Shapiro-Wilk
+#| warning: false
+#| echo: false
+
+shapiro.test(head(data_prep$Vict.Age, n=5000))
+```
+
+**Conclusion:** The *p* value in Shapiro-Wilk test is very low, confirming normal statistical distribution of the data.
+
+
+------------------------------------------------------------------------
+
+{{< pagebreak >}}
+
+# Geographical distribution of crime
+
+Certain offences may exhibit a heterogeneous geographical distribution. To illustrate this, information on the geographical location of assaults on minors was extracted from the dataset, thereby yielding a smaller subset of data that can be clearly displayed on a map. Colors indicate victim sex.
+
+:::{.content-visible when-format="pptx"}
+\
+**Conclusion:**
+
+The map clearly shows two large and two smaller clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
+\
+\
+No clear pattern is evident regarding the victims’ sex.
+:::
+
+```{r}
+#| label: plot-map
+#| warning: false
+#| echo: false
+
+data_for_map_BatteryBelow18_1 <- filter(data_orig, Crm.Cd.Desc == "BATTERY - SIMPLE ASSAULT" & Vict.Age > 0 & Vict.Age < 18 & (Vict.Sex == "M" | Vict.Sex == "F"))
+#data_for_map_BatteryBelow18_1 <- filter(data_orig, Crm.Cd.Desc == "BATTERY - SIMPLE ASSAULT" & Vict.Age > 0 & Vict.Age < 18)
+data_for_map_BatteryBelow18_2 <- select(data_for_map_BatteryBelow18_1, Vict.Sex, LON, LAT)
+
+cols = c("red", "blue")
+mapviewOptions(basemaps = c("OpenStreetMap","OpenTopoMap", "Esri.WorldImagery","OpenTopoMap", "CartoDB.Positron", "CartoDB.DarkMatter"))
+mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.Sex", crs = 4269, grid = FALSE, col.regions = cols, layer.name = 'Victim sex')
+```
+
+:::{.content-visible unless-format="pptx"}
+\
+**Conclusion:**
+
+The map clearly shows two large and two smaller clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
+\
+\
+No clear pattern is evident regarding the victims’ sex.
+:::
 
 ------------------------------------------------------------------------
 
@@ -101,15 +261,16 @@ ggplot(data_prep) +
 
 # Areas most affected by crime
 
-The chart below shows 10 areas with the highest crime rate.
+This chart shows 10 areas with the highest crime rate. The diameters of the circles are proportional to the number of reported crimes in the respective areas. Exponential transformation was applied to better highlight the differences.
 
-## Conclusion: {.unnumbered .unlisted}
-
-The diameters of the circles are approximately proportional to the number of reported crimes in the respective areas. Most reports are from the Central area, followed by Southwest and Pacific.
-
+:::{.content-visible when-format="pptx"}
 \
+**Conclusion:**
 
-```{r fig.height=14, fig.width=14}
+Most reports are from the Central area, followed by Southwest and Pacific.
+:::
+\
+```{r fig.height=13, fig.width=13}
 #| label: plot-affected-areas
 #| warning: false
 #| echo: false
@@ -132,122 +293,11 @@ ggplot() +
   theme(legend.position="none") +
   coord_equal()
 ```
-------------------------------------------------------------------------
+:::{.content-visible unless-format="pptx"}
+**Conclusion:**
 
-{{< pagebreak >}}
-
-# Victim age analysis
-
-This section presents the results of victim age analysis. Only male and female genders are presented (other/unknown categories are omitted due to low sample size).
-
-::: {.grid}
-::: {.g-col-6}
-**Histogram plot – total population:**
-```{r}
-#| label: age-histogram1
-#| warning: false
-#| echo: false
-
-data_prep <- data_orig %>% 
-  select(Vict.Age, Vict.Sex) %>%
-  filter(Vict.Age > 0)
-
-hist(data_prep$Vict.Age, breaks=30, xlim=c(0,100), col="orange", xlab="Victim age",
-     ylab="No. of crimes", main="Victim age distribution" )
-```
-
-**Conclusion:** This chart present *the entire population*. Most victims are adults aged 20–40 years. The data seems to be distributed normally, as confirmed below in a statistical test.
+Most reports are from the Central area, followed by Southwest and Pacific.
 :::
-::: {.g-col-6}
-**Histogram plot – victim age distribution by sex:**
-```{r}
-#| label: age-histogram2
-#| warning: false
-#| echo: false
-
-data_prep <- data_orig %>% 
-  select(Vict.Age, Vict.Sex) %>%
-  filter(Vict.Age > 0)
-
-data_prep_M <- filter(data_prep, Vict.Sex == "M")
-data_prep_F <- filter(data_prep, Vict.Sex == "F")
- 
-hist(data_prep_M$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(1,0,0,0.5), xlab="Victim age",
-     ylab="No. of crimes", main="Victim age distribution by sex" )
-
-hist(data_prep_F$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(0,0,1,0.5), add=T)
-
-legend("topright", legend=c("Men","Women"), col=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5)), pt.cex=2, pch=15 )
-```
-
-**Conclusion:** This chart presents overimposed histograms of the age for *male* and *female* victims. The sex-specific histograms are very similar and nearly overlap, although *male* victims are slightly older.
-:::
-:::  
-
-**Summary stastistics:**
-
-```{r}
-#| label: summary-stats
-#| warning: false
-#| echo: false
-
-library(vtable)
-st(data.frame(data_prep$Vict.Age),
-  labels = c('Victim age'),
-  title = "",
-  col.align = 'center',
-  add.median = TRUE,
-  summ = c('notNA(x)', 'mean(x)',   'median(x)',   'sd(x)', 'min(x)', 'pctile(x)[25]', 'pctile(x)[75]', 'max(x)')
-)
-```
-
-**Conclusion:** The yougest victim was 2 years old, and the oldest 99 years old. Median victim age was 36 years.
-
-\
-
-**Test for normal distribution:**
-
-```{r}
-#| label: Shapiro-Wilk
-#| warning: false
-#| echo: false
-
-shapiro.test(head(data_prep$Vict.Age, n=5000))
-```
-
-**Conclusion:** The *p* value in Shapiro-Wilk test is very low, confirming normal distribution of the data.
-
-
-------------------------------------------------------------------------
-
-{{< pagebreak >}}
-
-# Geographical distribution of crime
-
-Certain offences usually exhibit a heterogeneous geographical distribution. To illustrate this, the map below displays the locations of reported cases of physical assault involving minors in 2024. Colors indicate victim sex.
-
-## Conclusion: {.unnumbered .unlisted}
-
-The map clearly shows two large and two smaller clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
-
-No clear pattern is evident regarding the victims’ sex.
-
-\
-
-```{r}
-#| label: plot-map
-#| warning: false
-#| echo: false
-
-data_for_map_BatteryBelow18_1 <- filter(data_orig, Crm.Cd.Desc == "BATTERY - SIMPLE ASSAULT" & Vict.Age > 0 & Vict.Age < 18 & (Vict.Sex == "M" | Vict.Sex == "F"))
-#data_for_map_BatteryBelow18_1 <- filter(data_orig, Crm.Cd.Desc == "BATTERY - SIMPLE ASSAULT" & Vict.Age > 0 & Vict.Age < 18)
-data_for_map_BatteryBelow18_2 <- select(data_for_map_BatteryBelow18_1, Vict.Sex, LON, LAT)
-
-cols = c("red", "blue")
-mapviewOptions(basemaps = c("OpenStreetMap","OpenTopoMap", "Esri.WorldImagery","OpenTopoMap", "CartoDB.Positron", "CartoDB.DarkMatter"))
-mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.Sex", crs = 4269, grid = FALSE, col.regions = cols, layer.name = 'Victim sex')
-```
-
 ------------------------------------------------------------------------
 
 {{< pagebreak >}}
@@ -256,9 +306,12 @@ mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.
 
 The chart below shows crime distribution in the LA region by area. Five most common offences are presented.
 
-## Conclusion: {.unnumbered .unlisted}
+:::{.content-visible when-format="pptx"}
+\
+**Conclusion:**
 
 For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show more homogeneous distribution (e.g. “VANDALISM”).
+:::
 
 ```{r fig.height=14, fig.width=14}
 #| label: plot-area
@@ -337,18 +390,29 @@ p <- ggplot(data, aes(x=as.factor(id), y=Freq, fill=Crm.Cd.Desc)) +
  
 p
 ```
+
+:::{.content-visible unless-format="pptx"}
+**Conclusion:**
+
+For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show more homogeneous distribution (e.g. “VANDALISM”).
+:::
+
 ------------------------------------------------------------------------
 
 {{< pagebreak >}}
 
 # Crime types by time of day
 
-The chart below shows a heatmap of the likelyhood of specific crimes depending on time of day. Fifteen most common offences are presented.
+The chart below shows a heatmap of the probability of specific crimes depending on time of day. Fifteen most common offences are presented.
 
-## Conclusion: {.unnumbered .unlisted}
-
-Vehicle-related crimes (stealing or burglary from vehicle) are committed significantly more often during evening hours, starting around 5:00 PM. Most cases of theft occur in the middle of the day, whereas trespassing is clearly limited to early morning hours. Offences such as burglary are equally distributed throughout the day.
-
+:::{.content-visible when-format="pptx"}
+\
+**Conclusion:**  
+• Vehicle-related crimes (stealing or burglary from vehicle) are committed significantly more often during evening hours, starting around 5:00 PM.  
+• Most cases of theft occur in the middle of the day.  
+• Trespassing is clearly limited to early morning hours.  
+• Offences such as burglary are equally distributed throughout the day.  
+:::
 \
 
 ```{r}
@@ -373,3 +437,12 @@ heatmaply(data_for_heatmap,
   heatmap_layers = theme(axis.line = element_blank())
 ) 
 ```
+
+:::{.content-visible unless-format="pptx"}
+\
+**Conclusion:**  
+• Vehicle-related crimes (stealing or burglary from vehicle) are committed significantly more often during evening hours, starting around 5:00 PM.  
+• Most cases of theft occur in the middle of the day.  
+• Trespassing is clearly limited to early morning hours.  
+• Offences such as burglary are equally distributed throughout the day.  
+:::
