@@ -30,7 +30,8 @@ library(viridis)
 library(plotly)
 library(heatmaply)
 library(stringr)
-library(RColorBrewer)
+library(packcircles)
+library(ggplot2)
 
 
 data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
@@ -77,16 +78,12 @@ data_prep <- data_orig %>%
   select(Crm.Cd.Desc) %>%
   filter(Crm.Cd.Desc %in% head(names(sort(table(Crm.Cd.Desc), decreasing = TRUE)), 20))
 
-#display.brewer.all()
-mypalette<-brewer.pal(8,"Dark2")
-mypalette
-
 ggplot(data_prep) +
   geom_bar(
-    fill = c("#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231",
-  "#911eb4", "#46f0f0", "#f032e6", "#bcf60c", "#fabebe",
-  "#008080", "#e6beff", "#9a6324", "#fffac8", "#800000",
-  "#aaffc3", "#808000", "#ffd8b1", "#000075", "#808080"),
+    fill = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e",
+  "#e6ab02", "#a6761d", "#666666", "#1f78b4", "#b2df8a",
+  "#fb9a99", "#fdbf6f", "#cab2d6", "#ffff99", "#a6cee3",
+  "#ff7f00", "#6a3d9a", "#b15928", "#8dd3c7", "#fb8072"),
     color = "grey20", aes(y = fct_rev(fct_infreq(Crm.Cd.Desc)))) +
   scale_y_discrete(labels = label_wrap(30)) +
   labs(x = "Number of crimes reported", y = "Crime type") +
@@ -96,6 +93,44 @@ ggplot(data_prep) +
     axis.title.x = element_text(margin = margin(t = 12)
     )
   )
+```
+
+------------------------------------------------------------------------
+
+{{< pagebreak >}}
+
+# Areas most affected by crime
+
+The chart below shows 10 areas with the highest crime rate.
+
+## Conclusion: {.unnumbered .unlisted}
+
+The diameters of the circles are approximately proportional to the number of reported crimes in the respective areas. Most reports are from the Central area, followed by Southwest and Pacific.
+
+\
+
+```{r fig.height=14, fig.width=14}
+#| label: plot-affected-areas
+#| warning: false
+#| echo: false
+
+data_prep <- data_orig %>%
+  select(AREA.NAME) %>%
+  filter(AREA.NAME %in% head(names(sort(table(AREA.NAME), decreasing = TRUE)), 10))
+
+data_for_bubbles <- data.frame(table(data_prep))
+data_for_bubbles$Freq_exp = (data_for_bubbles$Freq)^4
+packing <- circleProgressiveLayout(data_for_bubbles$Freq_exp, sizetype='area')
+data_for_bubbles <- cbind(data_for_bubbles, packing)
+dat.gg <- circleLayoutVertices(packing, npoints=50)
+ 
+ggplot() + 
+  geom_polygon(data = dat.gg, aes(x, y, group = id, fill=as.factor(id)), colour = "black", alpha = 0.6) +
+  geom_text(data = data_for_bubbles, aes(x, y, size=Freq_exp, label = paste(AREA.NAME, "\n(", Freq, ")", sep=""))) +
+  scale_size_continuous(range = c(4,18)) +
+  theme_void() + 
+  theme(legend.position="none") +
+  coord_equal()
 ```
 ------------------------------------------------------------------------
 
