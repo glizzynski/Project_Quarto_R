@@ -10,11 +10,6 @@ format:
     theme: [serif, custom.scss]
     css: style.css
     slide-level: 1
-#  pptx:
-#    reference-doc: template.pptx
-#    slide-level: 0
-#  html:
-#    default
   pdf:
     margin-bottom: 3cm
 editor: source
