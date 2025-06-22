@@ -1,0 +1,31 @@
+.reveal img {
+  display: block;
+  margin: auto;
+}
+
+.leaflet {
+  display: block;
+  margin: auto;
+}
+
+li {
+  line-height: 1;
+}
+
+#TOC ul {
+    list-style-type: none;
+    margin: 0;
+    padding-top: 2em;
+}
+
+#TOC li {
+    padding-top: 1em;
+}
+
+.header-section-number {
+    padding-right: 0.5em;
+}
+
+#column1 #column2 {
+  vertical-align: top;
+}

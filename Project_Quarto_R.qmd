@@ -6,11 +6,15 @@ date-format: long
 number-sections: true
 toc: true
 format:
-  pptx:
-    reference-doc: template.pptx
-    slide-level: 0
-  html:
-    default
+  revealjs:
+    theme: [serif, custom.scss]
+    css: style.css
+    slide-level: 1
+#  pptx:
+#    reference-doc: template.pptx
+#    slide-level: 0
+#  html:
+#    default
   pdf:
     margin-bottom: 3cm
 editor: source
@@ -28,7 +32,6 @@ library(mapview)
 library(forcats)
 library(scales)
 library(webshot2)
-#library(hrbrthemes)
 library(viridis)
 library(plotly)
 library(heatmaply)
@@ -39,9 +42,7 @@ library(ggplot2)
 data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
 ```
 
-------------------------------------------------------------------------
-
-{{< pagebreak >}}
+[{{< pagebreak >}}]{.content-visible when-format="pdf"}
 
 # Information on the Quarto project
 
@@ -57,9 +58,7 @@ data_orig <- read.csv("Crime_data_LA_Prepared.csv", header = TRUE, sep = ";")
 
 ![](Source_website.png)
 
-------------------------------------------------------------------------
-
-{{< pagebreak >}}
+[{{< pagebreak >}}]{.content-visible when-format="pdf"}
 
 # Most common crime types
 
@@ -67,14 +66,7 @@ This chart shows an analysis of Los Angeles crime types in 2024 by frequency.
 
 Twenty most common offences are presented.
 
-:::{.content-visible when-format="pptx"}
-\
-**Conclusion:**
-
-The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 20,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 10,000.
-:::
-
-```{r fig.height=12, fig.width=14}
+```{r fig.height=10, fig.width=16}
 #| label: plot-frequency
 #| warning: false
 #| echo: false
@@ -94,32 +86,27 @@ ggplot(data_prep) +
   labs(x = "Number of crimes reported", y = "Crime type") +
   theme(
     axis.text = element_text(size = 14),
-    axis.title = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 12)
-    )
+    axis.title = element_text(size = 26),
+    axis.title.x = element_text(margin = margin(t = 16)),
+    axis.title.y = element_text(margin = margin(r = 16))
   )
 ```
-:::{.content-visible unless-format="pptx"}
+
 **Conclusion:**
 
-The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 20,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 10,000.
-:::
-------------------------------------------------------------------------
+The most common crime type in the LA area in 2004 was vehicle theft (an outstanding number of over 20,000 cases reported). The remaining types of offences are less variable in frequency, and none of them exceeded 10,000.
 
-{{< pagebreak >}}
+[{{< pagebreak >}}]{.content-visible when-format="pdf"}
 
 # Victim age analysis
-
-## Victim age structure: entire sample {.unnumbered .unlisted}
-
-:::{.content-visible when-format="pptx"}
 \
-**Conclusion:**
-This chart presents age distribution in *the entire population*. Most victims are adults aged 20–40 years. The data seems to be distributed normally, as confirmed below in a statistical test.
-:::
 
+:::: {layout="[0.47, -0.06, 0.47]" layout-valign="top"}
+:::{#column}
+## Victim age structure: entire sample {.unnumbered .unlisted}
+\
 ```{r}
-#| label: age-histogram1_new
+#| label: age-histogram1_new_1
 #| warning: false
 #| echo: false
 
@@ -128,31 +115,18 @@ data_prep <- data_orig %>%
   filter(Vict.Age > 0)
 
 hist(data_prep$Vict.Age, breaks=30, xlim=c(0,100), col="orange", xlab="Victim age",
-     ylab="No. of crimes", main="Victim age distribution - total population" )
+     ylab="No. of crimes", main="Victim age distribution - total population", cex.main=1.1)
 ```
-
-:::{.content-visible unless-format="pptx"}
 \
-**Conclusion:**
-This chart presents age distribution in *the entire population*. Most victims are adults aged 20–40 years. The data seems to be distributed normally, as confirmed below in a statistical test.
+**Conclusion:** This chart presents age distribution in *the entire population*. Most victims are adults aged 20–40 years. The data seems to be distributed normally, as confirmed below in a statistical test.
+\vspace{15ex}
 :::
 
-{{< pagebreak >}}
-
-# {.unnumbered .unlisted}
-
+:::{#column}
 ## Victim age structure: by age {.unnumbered .unlisted}
-
-:::{.content-visible when-format="pptx"}
 \
-**Conclusion:** This chart presents overimposed histograms of the age for *male* and *female* victims. The sex-specific histograms are very similar and nearly overlap, although *male* victims are slightly older.
-\
-\
-Only *male* and *female* genders are included (categories *other*/*unknown* were omitted due to low sample size).
-:::
-
 ```{r}
-#| label: age-histogram2
+#| label: age-histogram2_new_2
 #| warning: false
 #| echo: false
 
@@ -164,26 +138,27 @@ data_prep_M <- filter(data_prep, Vict.Sex == "M")
 data_prep_F <- filter(data_prep, Vict.Sex == "F")
  
 hist(data_prep_M$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(1,0,0,0.5), xlab="Victim age",
-     ylab="No. of crimes", main="Victim age distribution by sex" )
+     ylab="No. of crimes", main="Victim age distribution by sex", cex.main=1.1)
 
 hist(data_prep_F$Vict.Age, breaks=30, xlim=c(0,100), col=rgb(0,0,1,0.5), add=T)
 
 legend("topright", legend=c("Men","Women"), col=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5)), pt.cex=2, pch=15 )
 ```
 
-:::{.content-visible unless-format="pptx"}
 \
-**Conclusion:** This chart presents overimposed histograms of the age for *male* and *female* victims. The sex-specific histograms are very similar and nearly overlap, although *male* victims are slightly older.
-\
+**Conclusion:** This chart presents overimposed histograms of the age for *male* and *female* victims. The sex-specific histograms are very similar and nearly overlap, although *male* victims are slightly older.\
 \
 Only *male* and *female* genders are included (categories *other*/*unknown* were omitted due to low sample size).
 :::
+::::
 
-{{< pagebreak >}}
+[{{< pagebreak >}}]{.content-visible when-format="pdf"}
+
+# {.unnumbered .unlisted}
 
 ## Summary stastistics {.unnumbered .unlisted}
 
-```{r fig.height=14, fig.width=14}
+```{r}
 #| label: summary-stats
 #| warning: false
 #| echo: false
@@ -198,9 +173,11 @@ cat('SD:', round(sd(data_prep$Vict.Age)))
 cat('75th perc.:', round(quantile(data_prep$Vict.Age, 0.75)))
 cat('Max:', round(max(data_prep$Vict.Age)))
 ```
-**Conclusion:** The youngest victim was 2 years old, and the oldest 99 years old. Median victim age was 36 years.
 
-### Test for normal distribution: {.unnumbered .unlisted}
+**Conclusion:** The youngest victim was 2 years old, and the oldest 99 years old. Median victim age was 36 years.\
+\
+
+## Test for normal distribution: {.unnumbered .unlisted}
 
 ```{r}
 #| label: Shapiro-Wilk
@@ -210,26 +187,15 @@ cat('Max:', round(max(data_prep$Vict.Age)))
 shapiro.test(head(data_prep$Vict.Age, n=5000))
 ```
 
+\
+
 **Conclusion:** The *p* value in Shapiro-Wilk test is very low, confirming normal statistical distribution of the data.
 
-
-------------------------------------------------------------------------
-
-{{< pagebreak >}}
+[{{< pagebreak >}}]{.content-visible when-format="pdf"}
 
 # Geographical distribution of crime
 
-Certain offences may exhibit a heterogeneous geographical distribution. To illustrate this, information on the geographical location of assaults on minors was extracted from the dataset, thereby yielding a smaller subset of data that can be clearly displayed on a map. Colors indicate victim sex.
-
-:::{.content-visible when-format="pptx"}
-\
-**Conclusion:**
-
-The map clearly shows two large and two smaller clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
-\
-\
-No clear pattern is evident regarding the victims’ sex.
-:::
+Certain offences may exhibit a heterogeneous geographical distribution. To illustrate this, information on the geographical location of assaults on minors was extracted from the dataset, thereby yielding a smaller subset of data that can be clearly displayed on a map. Colors indicate victim sex.
 
 ```{r}
 #| label: plot-map
@@ -244,32 +210,19 @@ cols = c("red", "blue")
 mapviewOptions(basemaps = c("OpenStreetMap","OpenTopoMap", "Esri.WorldImagery","OpenTopoMap", "CartoDB.Positron", "CartoDB.DarkMatter"))
 mapview(data_for_map_BatteryBelow18_2, xcol = "LON", ycol = "LAT", zcol = "Vict.Sex", crs = 4269, grid = FALSE, col.regions = cols, layer.name = 'Victim sex')
 ```
-
-:::{.content-visible unless-format="pptx"}
-\
 **Conclusion:**
 
 The map clearly shows two large and two smaller clusters corresponding to areas where the majority of these offences (assaults on minors) occur, indicating where preventive measures in this regard should be intensified.
 \
-\
 No clear pattern is evident regarding the victims’ sex.
-:::
 
-------------------------------------------------------------------------
-
-{{< pagebreak >}}
+[{{< pagebreak >}}]{.content-visible when-format="pdf"}
 
 # Areas most affected by crime
 
 This chart shows 10 areas with the highest crime rate. The diameters of the circles are proportional to the number of reported crimes in the respective areas. Exponential transformation was applied to better highlight the differences.
-
-:::{.content-visible when-format="pptx"}
 \
-**Conclusion:**
 
-Most reports are from the Central area, followed by Southwest and Pacific.
-:::
-\
 ```{r fig.height=13, fig.width=13}
 #| label: plot-affected-areas
 #| warning: false
@@ -288,30 +241,21 @@ dat.gg <- circleLayoutVertices(packing, npoints=50)
 ggplot() + 
   geom_polygon(data = dat.gg, aes(x, y, group = id, fill=as.factor(id)), colour = "black", alpha = 0.6) +
   geom_text(data = data_for_bubbles, aes(x, y, size=Freq_exp, label = paste(AREA.NAME, "\n(", Freq, ")", sep=""))) +
-  scale_size_continuous(range = c(4,18)) +
+  scale_size_continuous(range = c(3,16)) +
   theme_void() + 
   theme(legend.position="none") +
   coord_equal()
 ```
-:::{.content-visible unless-format="pptx"}
+
 **Conclusion:**
 
 Most reports are from the Central area, followed by Southwest and Pacific.
-:::
-------------------------------------------------------------------------
 
-{{< pagebreak >}}
+[{{< pagebreak >}}]{.content-visible when-format="pdf"}
 
 # Crime distribution by area
 
 The chart below shows crime distribution in the LA region by area. Five most common offences are presented.
-
-:::{.content-visible when-format="pptx"}
-\
-**Conclusion:**
-
-For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show more homogeneous distribution (e.g. “VANDALISM”).
-:::
 
 ```{r fig.height=14, fig.width=14}
 #| label: plot-area
@@ -391,29 +335,15 @@ p <- ggplot(data, aes(x=as.factor(id), y=Freq, fill=Crm.Cd.Desc)) +
 p
 ```
 
-:::{.content-visible unless-format="pptx"}
 **Conclusion:**
 
 For certain crimes there are marked differences in the number of reports depending on area. For instance, “BURGLARY FROM VEHICLE” occurred overwhelmingly in the “Central” area (with more than twice as many reports as in any other area). Other offences show more homogeneous distribution (e.g. “VANDALISM”).
-:::
 
-------------------------------------------------------------------------
-
-{{< pagebreak >}}
+[{{< pagebreak >}}]{.content-visible when-format="pdf"}
 
 # Crime types by time of day
 
-The chart below shows a heatmap of the probability of specific crimes depending on time of day. Fifteen most common offences are presented.
-
-:::{.content-visible when-format="pptx"}
-\
-**Conclusion:**  
-• Vehicle-related crimes (stealing or burglary from vehicle) are committed significantly more often during evening hours, starting around 5:00 PM.  
-• Most cases of theft occur in the middle of the day.  
-• Trespassing is clearly limited to early morning hours.  
-• Offences such as burglary are equally distributed throughout the day.  
-:::
-\
+The chart below shows the probability of specific crimes depending on time of day. Fifteen most common offences are presented.
 
 ```{r}
 #| label: plot-heatmap
@@ -425,24 +355,50 @@ data_prep <- data_orig %>%
   filter(Crm.Cd.Desc %in% head(names(sort(table(Crm.Cd.Desc), decreasing = TRUE)), 15))
 data_prep$Crm.Cd.Desc = str_wrap(data_prep$Crm.Cd.Desc, width = 30)
 data_for_heatmap <- as.data.frame.matrix(table(data_prep$Crm.Cd.Desc, data_prep$Hour))
+```
+
+::: {.content-visible unless-format="pdf"}
+```{r}
+#| label: plot-heatmap_non-pdf
+#| warning: false
+#| echo: false
 
 heatmaply(data_for_heatmap,
+  width = 1000,
+  height = 450,
   dendrogram = "none",
   scale_fill_gradient_fun = ggplot2::scale_fill_gradientn(colours = viridis(256, option = "turbo")),
   xlab = "Time of day", ylab = "Crime type",
-  main = "Crime types by time of day – a heatmap chart",
+#  main = "Crime types by time of day – a heatmap chart",
   grid_color = "white",
   label_names = c("Crime type", "Time of day", "Number reported"),
   fontsize_row = 8, fontsize_col = 8,
   heatmap_layers = theme(axis.line = element_blank())
 ) 
 ```
-
-:::{.content-visible unless-format="pptx"}
-\
-**Conclusion:**  
-• Vehicle-related crimes (stealing or burglary from vehicle) are committed significantly more often during evening hours, starting around 5:00 PM.  
-• Most cases of theft occur in the middle of the day.  
-• Trespassing is clearly limited to early morning hours.  
-• Offences such as burglary are equally distributed throughout the day.  
 :::
+
+::: {.content-visible when-format="pdf"}
+\
+
+```{r fig.height=2, fig.width=4}
+#| label: plot-heatmap_pdf
+#| warning: false
+#| echo: false
+heatmaply(data_for_heatmap,
+  dendrogram = "none",
+  scale_fill_gradient_fun = ggplot2::scale_fill_gradientn(colours = viridis(256, option = "turbo")),
+  xlab = "Time of day", ylab = "Crime type",
+  grid_color = "white",
+  label_names = c("Crime type", "Time of day", "Number reported"),
+  heatmap_layers = theme(axis.line = element_blank())
+) 
+```
+:::
+
+**Conclusions:**
+
+* Vehicle-related crimes (stealing or burglary from vehicle) are much more common in the evening hours, starting around 5:00 PM.
+* Most cases of theft usually occur in the middle of the day.
+* Trespassing is clearly limited to early morning hours.
+* Other offences, such as burglary or robbery, are equally distributed throughout the day.
